@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roll dice game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Acme&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Acme', sans-serif;
+            border: 0;
+            outline: 0;
+        }
+
+        /* header */
+        .header {
+            margin: 20px;
+            text-shadow: 1px 0.7px 0 white;
+            font-size: 1rem;
+            background-size: cover;
+            background-position: center;
+            height: 160px;  /*Set the desired height of your header*/
+            text-align: center;
+            color: #fff;
+            /* padding: 50px 0; Adjust as needed for spacing */
+        }
+
+        
+
+        body {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center;
+            min-height: 100vh;
+            background: #ff6801;
+        }
+
+        .container {
+            display: grid;
+            place-items: center;
+            width: 250px;
+            background: #eee;
+            padding: 60px 0 40px;
+            border-radius: 30px;
+            box-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        .dice {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            transform-style: preserve-3d;
+            transition: 0.09s ease;
+        }
+
+        @keyframes rolling {
+            50% {
+                transform: rotateX(455deg) rotateY(455deg);
+            }
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 5px solid #f6f3f0;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #dddbd8, #fff);
+            transform-style: preserve-3d;
+        }
+
+        .face::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            background: #f6f3f0;
+            transform: translateZ(-1px);
+        }
+
+        .face::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 18px;
+            height: 18px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        .front {
+            transform: translateZ(50px);
+        }
+
+        .back {
+            transform: rotateX(180deg) translateZ(50px);
+        }
+
+        .top {
+            transform: rotateX(90deg) translateZ(50px);
+        }
+
+        .bottom {
+            transform: rotateX(-90deg) translateZ(50px);
+        }
+
+        .right {
+            transform: rotateY(90deg) translateZ(50px);
+        }
+
+        .left {
+            transform: rotateY(-90deg) translateZ(50px);
+        }
+
+        .front::after {
+            width: 30px;
+            height: 30px;
+            background: #000;
+            margin: -15px 0 0 -15px;
+        }
+
+        .back::after {
+            margin: -35px 0 0 -30px;
+            box-shadow: 40px 0, 0 25px, 40px 25px, 0 50px, 40px 50px;
+        }
+
+        .top::after {
+            margin: -30px 0 0 -30px;
+            box-shadow: 40px 40px;
+        }
+
+        .bottom::after {
+            margin: -36px 0 0 -36px;
+            box-shadow: 26px 26px, 52px 52px, 52px 0, 0 52px;
+        }
+
+        .right::after {
+            margin: -30px 0 0 -30px;
+            box-shadow: 40px 0, 0 40px, 40px 40px;
+        }
+
+        .left::after {
+            margin: -35px 0 0 -35px;
+            box-shadow: 25px 25px, 50px 50px;
+        }
+
+        .roll {
+            color: #ff6801;
+            margin-top: 60px;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid #ff6801;
+            cursor: pointer;
+            text-shadow: 0.9px 0px #ff6801;
+        }
+
+        .roll:hover {
+            color: #fff;
+            background: #ff6801;
+        }
+
+        /* text and logo */
+        .footer {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* animation for emojiblast start */
+        @keyframes emojiAnimation {
+            0% {
+                transform: translateY(-100px) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: emojiAnimation 2.5s linear; /* Adjust the duration as needed */
+        }
+
+        /* Define styles to make emojis colorful */
+        .emoji:nth-child(1) {
+            color: red;
+        }
+        .emoji:nth-child(2) {
+            color: green;
+        }
+        .emoji:nth-child(3) {
+            color: blue;
+        }
+        /* animation blast end */
+
+
+/* Style the message element */
+.message {
+    text-align: left; /* Align the message to the left */
+    margin-top: 20px;
+    font-size: 18px;
+    color: #ff6801;
+    padding: 10px; /* Add padding for spacing */
+    background-color: white; /* Set background color */
+    border-radius: 10px; /* Add a rounded border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+    max-width: 300px; /* Limit the maximum width for responsiveness */
+    margin-left: 20px; /* Create space from the left side of the page */
+    transform-origin: center; /* Set the rotation origin to the center */
+    transition: transform 0.3s ease; /* Add a transition effect for the transform property */
+    text-shadow: 0.7px 0px #ff6801;
+}
+
+/* Add a hover effect to rotate the message exactly one time */
+.message:hover {
+    transform: translateX(20px) translateY(30px) translateZ(40px) ; /* Rotate the message one full turn (360 degrees) */
+}
+
+
+
+
+
+        
+    </style>
+</head>
+<body>
+     <!-- header -->
+   <div class="header">
+    <h1>Customer Experience Quest</h1> 
+</div>
+
+   
+    <!-- dice faces -->
+    <div class="container">
+        <div class="dice">
+            <div class="face front"></div>
+            <div class="face back"></div>
+            <div class="face top"></div>
+            <div class="face bottom"></div>
+            <div class="face right"></div>
+            <div class="face left"></div>
+        </div>
+        <button class="roll">
+            <h2>Roll Dice</h2>
+        </button>
+    </div>
+
+    <!-- Add a message element -->
+<div class="message">
+    <p><b></b>Roll a 6 to buy a mystery box chance!</b></p>
+</div>
+<!-- emoji container -->
+<div id="emojis-container"></div>
+ 
+
+
+
+    <!-- script  -->
+    <script>
+        const dice = document.querySelector('.dice');
+        const rollBtn = document.querySelector('.roll');
+
+        // Adding emojicontainer start
+        const emojisContainer = document.getElementById('emojis-container');
+
+        // auto generated number in the heading 
+
+        const diceHeading = document.getElementById('dice-heading');
+
+// Function to trigger the celebration with emojis
+function triggerCelebration() {
+    const emojiArray = ["🎉", "🎈", "🥳", "💖"];
+    
+    for (let i = 0; i < 50; i++) {
+        const emoji = document.createElement('span');
+        emoji.classList.add('emoji');
+        emoji.innerText = emojiArray[Math.floor(Math.random() * emojiArray.length)];
+
+        const randomX = Math.random() * window.innerWidth;
+        const randomY = Math.random() * window.innerHeight;
+        const randomSpeed = Math.random() * 5 + 3;
+
+        emoji.style.left = `${randomX}px`;
+        emoji.style.top = `${randomY}px`;
+        emoji.style.animationDuration = `${randomSpeed}s`;
+
+        emojisContainer.appendChild(emoji);
+    }
+
+    emojisContainer.style.animation = `emojiAnimation 10s linear`;
+
+    setTimeout(() => {
+        emojisContainer.innerHTML = '';
+    }, 10000);
+}
+
+// // In your roll button click event, call triggerCelebration when 6 is rolled
+// rollBtn.addEventListener('click', () => {
+//     const random = Math.floor(Math.random() * 6)+1;
+//     if (random >= 1 && random <= 6) {
+//         rollDice(random);
+//         if (random === 6) {
+//             triggerCelebration(); // Trigger celebration when 6 is rolled
+//         }
+//     } else {
+//         randomDice();
+//     }
+// });
+
+
+
+        // emoji container finish
+        
+        const randomDice = () => {
+            // generate numbers between 1 to 6 
+            const random = Math.floor(Math.random() * 6) + 1;
+
+            // generate numbers between 1 to 5
+            // const random = Math.floor(Math.random() * 5) + 1;
+           
+            if (random >= 1 && random <= 6) {
+                // Update the heading with the rolled number
+                // diceHeading.textContent = `You rolled a ${random}!`;
+                rollDice(random);
+                
+            } else {
+                randomDice();
+            }
+        }
+
+
+        
+        
+
+
+        const rollDice = random => {
+            dice.style.animation = 'rolling 2.5s';
+            setTimeout(() => {
+                switch (random) {
+                    case 1: dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                        break;
+                    
+                    case 2: dice.style.transform = 'rotateX(-90deg) rotateY(0deg)';
+                        break;
+                    case 5: dice.style.transform = 'rotateX(90deg) rotateY(0deg)';
+                        break;
+                    case 3: dice.style.transform = 'rotateX(0deg) rotateY(90deg)';
+                        break;
+                    case 4: dice.style.transform = 'rotateX(0deg) rotateY(-90deg)';
+                        break;
+                        // first case 
+                    // case 6:
+                    //     dice.style.transform =  'rotateX(180deg) translateZ(50px)'  //'rotateX(180deg) rotateY(0deg)';
+                    //     // Display a popup message for a few seconds
+                    //     alert('Congratulations! You rolled a 6!');
+                    //     // Redirect to another link after the popup is closed
+                    //     window.location.href = 'https://forms.gle/QMEmYQKJqFf6Ctm19'; // Replace with your desired link
+                    //     break;
+                    // default:
+                    //     break;
+        
+        
+                    // with 3 second delay popup message 
+                    case 6:
+                        dice.style.transform = 'rotateX(180deg) translateZ(50px)';
+
+                        // emoji celebration function 
+                        triggerCelebration();
+                       
+                        
+                        // Use setTimeout to delay the popup message by 3 seconds
+                        setTimeout(function() {
+                        // Display a popup message after 3 seconds
+                        alert('Congratulations! You rolled a 6!');
+                        // Trigger the celebration
+                      
+                        
+        
+                        // Redirect to another link after the popup is closed
+                        window.location.href = 'https://www.daraz.com.bd/products/99-taka-brand-mystery-box-i319049659-s1460370216.html?dsource=share&laz_share_info=11253483_100_100_700031661972_11253483_null&laz_token=eb0b52910135a09988c65924df1a19b3&aff_trace_key=2c63d458e1ac412180c58bcf39530440-1698915839049-00554-_CUu5TV';  // Replace with your desired link
+                        }, 3000); // 3000 milliseconds = 3 seconds
+                        break;
+        
+        
+                    default:
+            // Handle other cases
+            break;
+                }
+                dice.style.animation = 'none';
+            }, 4050);
+        }
+        
+        rollBtn.addEventListener('click', randomDice);
+        
+        </script>
+</body>
+</html>
